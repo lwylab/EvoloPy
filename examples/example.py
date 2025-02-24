@@ -17,19 +17,26 @@ from EvoloPy.optimizer import run
 
 # Select optimizers
 # "SSA","PSO","GA","BAT","FFA","GWO","WOA","MVO","MFO","CS","HHO","SCA","JAYA","DE"
-optimizer = ["GA", "PSO", "GWO"]
+optimizer = ["GA", "PSO","HHO"]
 
 # Select benchmark function"
 # "F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12","F13","F14","F15","F16","F17","F18","F19","F20","F21","F22","F23","F24"
 # "ackley", "rosenbrock", "rastrigin", "griewank"
-objectivefunc = ["F3", "F4"]
+# objectivefunc = ["F3", "F4"]
+# objectivefunc = ["F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12","F13","F14","F15","F16","F17","F18","F19","F20","F21","F22","F23","F24"]
+objectivefunc = [
+    "F12022", "F22022", "F32022", "F42022",
+    "F52022", "F62022", "F72022", "F82022",
+    "F92022", "F102022", "F112022", "F122022"
+]
+
 
 # Select number of repetitions for each experiment.
 # To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.
-NumOfRuns = 3
+NumOfRuns = 1
 
 # Select general parameters for all optimizers (population size, number of iterations) ....
-params = {"PopulationSize": 30, "Iterations": 50}
+params = {"PopulationSize": 30, "Iterations": 200}
 
 # Choose whether to Export the results in different formats
 export_flags = {
