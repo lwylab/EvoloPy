@@ -1,14 +1,159 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue May 17 12:46:20 2016
-
-@author: Hossam Faris
-
-updated on Sun Feb 9 06:05:50 2025
-"""
+import math
+from typing import List, Union, Any
 
 import numpy as np
-import math
+from opfunu.cec_based import cec2022
+
+# 类型别名
+ArrayLike = Union[List[float], np.ndarray]
+
+# 基准函数常量
+ACKLEY_A = 20
+ACKLEY_B = 0.2
+ACKLEY_C = 2 * np.pi
+RASTRIGIN_A = 10
+
+
+
+class CEC2022Functions:
+    """CEC 2022基准函数集合"""
+
+    @staticmethod
+    def _evaluate_cec2022(x: ArrayLike, func_num: int, dim: int = 10) -> float:
+        """CEC 2022函数的通用评估方法
+
+        参数:
+            x: 输入向量
+            func_num: 函数编号(1-12)
+            dim: 问题维度
+
+        返回:
+            在x点的函数值
+        """
+        func_name = f'F{func_num}2022'
+        return getattr(cec2022, func_name)(ndim=dim).evaluate(x)
+
+    @staticmethod
+    def F12022(x: ArrayLike) -> float:
+        return CEC2022Functions._evaluate_cec2022(x, 1)
+
+    @staticmethod
+    def F22022(x: ArrayLike) -> float:
+        return CEC2022Functions._evaluate_cec2022(x, 2)
+
+    @staticmethod
+    def F32022(x: ArrayLike) -> float:
+        return CEC2022Functions._evaluate_cec2022(x, 3)
+
+    @staticmethod
+    def F42022(x: ArrayLike) -> float:
+        return CEC2022Functions._evaluate_cec2022(x, 4)
+
+    @staticmethod
+    def F52022(x: ArrayLike) -> float:
+        return CEC2022Functions._evaluate_cec2022(x, 5)
+
+    @staticmethod
+    def F62022(x: ArrayLike) -> float:
+        return CEC2022Functions._evaluate_cec2022(x, 6)
+
+    @staticmethod
+    def F72022(x: ArrayLike) -> float:
+        return CEC2022Functions._evaluate_cec2022(x, 7)
+
+    @staticmethod
+    def F82022(x: ArrayLike) -> float:
+        return CEC2022Functions._evaluate_cec2022(x, 8)
+
+    @staticmethod
+    def F92022(x: ArrayLike) -> float:
+        return CEC2022Functions._evaluate_cec2022(x, 9)
+
+    @staticmethod
+    def F102022(x: ArrayLike) -> float:
+        return CEC2022Functions._evaluate_cec2022(x, 10)
+
+    @staticmethod
+    def F112022(x: ArrayLike) -> float:
+        return CEC2022Functions._evaluate_cec2022(x, 11)
+
+    @staticmethod
+    def F122022(x: ArrayLike) -> float:
+        return CEC2022Functions._evaluate_cec2022(x, 12)
+
+
+class ClassicalFunctions:
+    """经典基准函数集合"""
+
+    @staticmethod
+    def prod(it: ArrayLike) -> float:
+        """计算迭代器中所有元素的乘积"""
+        return float(np.prod(it))
+
+    @staticmethod
+    def Ufun(x: ArrayLike, a: float, k: float, m: float) -> ArrayLike:
+        """部分基准函数中使用的惩罚函数"""
+        x = np.asarray(x)
+        return k * ((x - a) ** m) * (x > a) + k * ((-x - a) ** m) * (x < (-a))
+
+    @staticmethod
+    def F1(x: ArrayLike) -> float:
+        return float(np.sum(np.square(x)))
+
+    @staticmethod
+    def F2(x: ArrayLike) -> float:
+        return float(np.sum(np.abs(x)) + ClassicalFunctions.prod(np.abs(x)))
+
+    @staticmethod
+    def F3(x: ArrayLike) -> float:
+        x = np.asarray(x)
+        return float(sum((np.sum(x[0:i + 1])) ** 2 for i in range(len(x))))
+
+    @staticmethod
+    def F4(x: ArrayLike) -> float:
+        return float(np.max(np.abs(x)))
+
+    @staticmethod
+    def F5(x: ArrayLike) -> float:
+        x = np.asarray(x)
+        return float(np.sum(100.0 * (x[1:] - x[:-1] ** 2) ** 2 + (1 - x[:-1]) ** 2))
+
+    @staticmethod
+    def F6(x: ArrayLike) -> float:
+        return float(np.sum(np.square(np.abs(x + 0.5))))
+
+    @staticmethod
+    def F7(x: ArrayLike) -> float:
+        x = np.asarray(x)
+        w = np.arange(1, len(x) + 1)
+        return float(np.sum(w * x ** 4) + np.random.uniform(0, 1))
+
+    @staticmethod
+    def F8(x: ArrayLike) -> float:
+        return float(np.sum(-x * np.sin(np.sqrt(np.abs(x)))))
+
+    @staticmethod
+    def F9(x: ArrayLike) -> float:
+        x = np.asarray(x)
+        return float(RASTRIGIN_A * len(x) + np.sum(x ** 2 - RASTRIGIN_A * np.cos(2 * np.pi * x)))
+
+    @staticmethod
+    def F10(x: ArrayLike) -> float:
+        x = np.asarray(x)
+        d = len(x)
+        sum1 = np.sum(x ** 2)
+        sum2 = np.sum(np.cos(ACKLEY_C * x))
+        return float(-ACKLEY_A * np.exp(-ACKLEY_B * np.sqrt(sum1 / d))
+                     - np.exp(sum2 / d) + ACKLEY_A + np.e)
+
+    @staticmethod
+    def F11(x: ArrayLike) -> float:
+        x = np.asarray(x)
+        w = np.arange(1, len(x) + 1)
+        return float(np.sum(x ** 2) / 4000
+                     - ClassicalFunctions.prod(np.cos(x / np.sqrt(w))) + 1)
+
 
 # define the function blocks
 def prod(it):
@@ -354,8 +499,15 @@ def griewank(x):
     part2 = np.prod(np.cos(x / np.sqrt(np.arange(1, len(x) + 1))))
     return part1 - part2 + 1
 
-def getFunctionDetails(a):
-    # [name, lb, ub, dim]
+def getFunctionDetails(func_name: str) -> Union[List[Any], str]:
+    """获取基准函数的详细信息
+
+    参数:
+        func_name: 函数名称
+
+    返回:
+        包含[名称, 下界, 上界, 维度]的列表，如果未找到则返回"nothing"
+    """
     param = {
         "F1": ["F1", -100, 100, 30],
         "F2": ["F2", -10, 10, 30],
@@ -380,9 +532,35 @@ def getFunctionDetails(a):
         "F21": ["F21", 0, 10, 4],
         "F22": ["F22", 0, 10, 4],
         "F23": ["F23", 0, 10, 4],
-        "ackley": ["ackley", -32.768, 32.768, 30],  # Ackley function
-        "rosenbrock": ["rosenbrock", -5, 10, 30],  # Rosenbrock function
-        "rastrigin": ["rastrigin", -5.12, 5.12, 30],  # Rastrigin function
-        "griewank": ["griewank", -600, 600, 30],  # Griewank function
+        "ackley": ["ackley", -32.768, 32.768, 30],  # Ackley函数
+        "rosenbrock": ["rosenbrock", -5, 10, 30],  # Rosenbrock函数
+        "rastrigin": ["rastrigin", -5.12, 5.12, 30],  # Rastrigin函数
+        "griewank": ["griewank", -600, 600, 30],  # Griewank函数
+        "F12022": ["F12022", -100, 100, 10],
+        "F22022": ["F22022", -100, 100, 10],
+        "F32022": ["F32022", -100, 100, 10],
+        "F42022": ["F42022", -100, 100, 10],
+        "F52022": ["F52022", -100, 100, 10],
+        "F62022": ["F62022", -100, 100, 10],
+        "F72022": ["F72022", -100, 100, 10],
+        "F82022": ["F82022", -100, 100, 10],
+        "F92022": ["F92022", -100, 100, 10],
+        "F102022": ["F102022", -100, 100, 10],
+        "F112022": ["F112022", -100, 100, 10],
+        "F122022": ["F122022", -100, 100, 10]
     }
-    return param.get(a, "nothing")
+    return param.get(func_name, "nothing")
+
+# CEC 2022函数
+F12022 = CEC2022Functions.F12022
+F22022 = CEC2022Functions.F22022
+F32022 = CEC2022Functions.F32022
+F42022 = CEC2022Functions.F42022
+F52022 = CEC2022Functions.F52022
+F62022 = CEC2022Functions.F62022
+F72022 = CEC2022Functions.F72022
+F82022 = CEC2022Functions.F82022
+F92022 = CEC2022Functions.F92022
+F102022 = CEC2022Functions.F102022
+F112022 = CEC2022Functions.F112022
+F122022 = CEC2022Functions.F122022
